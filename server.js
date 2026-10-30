@@ -2,7 +2,10 @@ const express = require('express');
 const path = require('path');
 
 const app = express();
-
+console.log(
+  'Gemini API key configured:',
+  Boolean(process.env.GEMINI_API_KEY)
+);
 app.use(express.json({ limit: '50kb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
