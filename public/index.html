@@ -1,8 +1,11 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NOVA AI</title>  <style>
+  <title>NOVA AI</title>
+
+  <style>
     * {
       box-sizing: border-box;
     }
@@ -44,6 +47,7 @@
       max-width: 90%;
       line-height: 1.5;
       overflow-wrap: anywhere;
+      white-space: pre-wrap;
     }
 
     .bot {
@@ -85,75 +89,129 @@
       color: white;
       font-weight: bold;
     }
-  </style></head><body>  <header>
+
+    button:disabled {
+      opacity: 0.6;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
     <h1>🤖 NOVA AI</h1>
     <p>Your personal and business assistant</p>
-  </header>  <div id="chat">
+  </header>
+
+  <div id="chat">
     <div class="message bot">
       Hello! 👋 I'm NOVA AI.<br><br>
       I can help you learn, develop business ideas,
       and explore technology.<br><br>
       Kedu! How can I help you today?
     </div>
-  </div>  <div class="controls">
+  </div>
+
+  <div class="controls">
     <input
       id="userInput"
       type="text"
       placeholder="Message NOVA..."
       autocomplete="off"
     >
-    <button onclick="sendMessage()">Send</button>
-  </div>  <script>
-    function sendMessage() {
-      const input = document.getElementById("userInput");
-      const chat = document.getElementById("chat");
-      const message = input.value.trim();
 
-      if (!message) return;
+    <button id="sendButton" onclick="sendMessage()">
+      Send
+    </button>
+  </div>
 
-      const userMessage = document.createElement("div");
-      userMessage.className = "message user";
-      userMessage.textContent = message;
-      chat.appendChild(userMessage);
+  <script>
+    const chat = document.getElementById("chat");
+    const input = document.getElementById("userInput");
+    const sendButton = document.getElementById("sendButton");
 
-      const botMessage = document.createElement("div");
-      botMessage.className = "message bot";
+    const messages = [];
 
-      let reply =
-        "I'm NOVA AI! I'm still learning. Try asking me about technology, business, or programming.";
+    function addMessage(text, sender) {
+      const message = document.createElement("div");
 
-      const text = message.toLowerCase();
+      message.className = "message " + sender;
+      message.textContent = text;
 
-      if (text.includes("hello") || text.includes("hi")) {
-        reply = "Hello! 👋 Welcome to NOVA AI. How can I help you?";
-      } else if (text.includes("who are you")) {
-        reply = "I'm NOVA AI, your personal and business assistant!";
-      } else if (text.includes("web3")) {
-        reply = "Web3 is an idea for an internet where blockchain technology can help people control digital assets and interact with decentralized applications.";
-      } else if (text.includes("python")) {
-        reply = "Python is a programming language used to build software, automate tasks, analyze data, and develop AI applications.";
-      } else if (text.includes("pidgin")) {
-        reply = "No wahala! I fit try reply you for Nigerian Pidgin. Wetin you wan know?";
-      } else if (text.includes("igbo")) {
-        reply = "Ndewo! Aga m agba mbo inyere gi aka. I can try to communicate in Igbo.";
-      } else if (text.includes("business")) {
-        reply = "NOVA can help you brainstorm business ideas, write promotional messages, and plan how to serve your customers.";
-      }
-
-      botMessage.textContent = reply;
-      chat.appendChild(botMessage);
-
-      input.value = "";
+      chat.appendChild(message);
       chat.scrollTop = chat.scrollHeight;
+
+      return message;
     }
 
-    document.getElementById("userInput").addEventListener(
-      "keydown",
-      function(event) {
-        if (event.key === "Enter") {
-          sendMessage();
+    async function sendMessage() {
+      const message = input.value.trim();
+
+      if (!message || sendButton.disabled) return;
+
+      addMessage(message, "user");
+
+      messages.push({
+        role: "user",
+        content: message
+      });
+
+      input.value = "";
+      sendButton.disabled = true;
+
+      const loadingMessage = addMessage(
+        "NOVA AI is thinking...",
+        "bot"
+      );
+
+      try {
+        const response = await fetch("/api/chat", {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json"
+          },
+
+          body: JSON.stringify({
+            messages: messages
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Something went wrong.");
         }
+
+        if (!data.reply) {
+          throw new Error("NOVA AI returned an empty response.");
+        }
+
+        loadingMessage.textContent = data.reply;
+
+        messages.push({
+          role: "assistant",
+          content: data.reply
+        });
+
+      } catch (error) {
+        loadingMessage.textContent =
+          "Sorry, I couldn't connect right now. " + error.message;
+
+        messages.pop();
       }
-    );
-  </script></body>
+
+      sendButton.disabled = false;
+      chat.scrollTop = chat.scrollHeight;
+      input.focus();
+    }
+
+    input.addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        sendMessage();
+      }
+    });
+  </script>
+
+</body>
 </html>
