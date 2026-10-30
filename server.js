@@ -1,5 +1,3 @@
-// NOVA AI - Gemini secure backend
-
 const express = require('express');
 const path = require('path');
 
@@ -32,6 +30,12 @@ app.post('/api/chat', async (req, res) => {
         parts: [{ text: m.content }]
       }));
 
+    if (contents.length === 0) {
+      return res.status(400).json({
+        error: 'Please enter a message first.'
+      });
+    }
+
     const upstream = await fetch(
       'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
       {
@@ -59,3 +63,39 @@ Use a respectful, clear tone. You may use Nigerian English or Nigerian Pidgin wh
     );
 
     const data = await upstream.json();
+
+    if (!upstream.ok) {
+      console.error('Gemini API error:', data);
+
+      return res.status(upstream.status).json({
+        error: 'NOVA AI could not get a response. Please try again.'
+      });
+    }
+
+    const reply = data.candidates?.[0]?.content?.parts
+      ?.map(part => part.text || '')
+      .join('')
+      .trim();
+
+    if (!reply) {
+      return res.status(502).json({
+        error: 'NOVA AI received an empty response. Please try again.'
+      });
+    }
+
+    res.json({ reply });
+
+  } catch (error) {
+    console.error('Server error:', error);
+
+    res.status(500).json({
+      error: 'Something went wrong. Please try again.'
+    });
+  }
+});
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`NOVA AI is running on port ${PORT}`);
+});
