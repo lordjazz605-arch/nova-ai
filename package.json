@@ -1,0 +1,9 @@
+{
+  "name": "nova-ai-starter",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Starter project for the NOVA AI chat website",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "dependencies": { "express": "^4.21.2" }
+}
