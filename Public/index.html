@@ -1,0 +1,159 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NOVA AI</title>  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #101426;
+      color: white;
+    }
+
+    header {
+      background: #191f38;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid #353d5b;
+    }
+
+    header h1 {
+      margin: 0;
+      color: #8e9cff;
+    }
+
+    header p {
+      margin-bottom: 0;
+      color: #c4c9df;
+    }
+
+    #chat {
+      height: calc(100vh - 220px);
+      overflow-y: auto;
+      padding: 15px;
+    }
+
+    .message {
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 12px;
+      max-width: 90%;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .bot {
+      background: #252d4c;
+      margin-right: auto;
+    }
+
+    .user {
+      background: #5969e8;
+      margin-left: auto;
+    }
+
+    .controls {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      padding: 12px;
+      background: #191f38;
+      display: flex;
+      gap: 8px;
+    }
+
+    input {
+      flex: 1;
+      min-width: 0;
+      padding: 13px;
+      border-radius: 10px;
+      border: 1px solid #424b70;
+      background: #101426;
+      color: white;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background: #7785ff;
+      color: white;
+      font-weight: bold;
+    }
+  </style></head><body>  <header>
+    <h1>🤖 NOVA AI</h1>
+    <p>Your personal and business assistant</p>
+  </header>  <div id="chat">
+    <div class="message bot">
+      Hello! 👋 I'm NOVA AI.<br><br>
+      I can help you learn, develop business ideas,
+      and explore technology.<br><br>
+      Kedu! How can I help you today?
+    </div>
+  </div>  <div class="controls">
+    <input
+      id="userInput"
+      type="text"
+      placeholder="Message NOVA..."
+      autocomplete="off"
+    >
+    <button onclick="sendMessage()">Send</button>
+  </div>  <script>
+    function sendMessage() {
+      const input = document.getElementById("userInput");
+      const chat = document.getElementById("chat");
+      const message = input.value.trim();
+
+      if (!message) return;
+
+      const userMessage = document.createElement("div");
+      userMessage.className = "message user";
+      userMessage.textContent = message;
+      chat.appendChild(userMessage);
+
+      const botMessage = document.createElement("div");
+      botMessage.className = "message bot";
+
+      let reply =
+        "I'm NOVA AI! I'm still learning. Try asking me about technology, business, or programming.";
+
+      const text = message.toLowerCase();
+
+      if (text.includes("hello") || text.includes("hi")) {
+        reply = "Hello! 👋 Welcome to NOVA AI. How can I help you?";
+      } else if (text.includes("who are you")) {
+        reply = "I'm NOVA AI, your personal and business assistant!";
+      } else if (text.includes("web3")) {
+        reply = "Web3 is an idea for an internet where blockchain technology can help people control digital assets and interact with decentralized applications.";
+      } else if (text.includes("python")) {
+        reply = "Python is a programming language used to build software, automate tasks, analyze data, and develop AI applications.";
+      } else if (text.includes("pidgin")) {
+        reply = "No wahala! I fit try reply you for Nigerian Pidgin. Wetin you wan know?";
+      } else if (text.includes("igbo")) {
+        reply = "Ndewo! Aga m agba mbo inyere gi aka. I can try to communicate in Igbo.";
+      } else if (text.includes("business")) {
+        reply = "NOVA can help you brainstorm business ideas, write promotional messages, and plan how to serve your customers.";
+      }
+
+      botMessage.textContent = reply;
+      chat.appendChild(botMessage);
+
+      input.value = "";
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    document.getElementById("userInput").addEventListener(
+      "keydown",
+      function(event) {
+        if (event.key === "Enter") {
+          sendMessage();
+        }
+      }
+    );
+  </script></body>
+</html>
