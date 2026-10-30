@@ -59,36 +59,3 @@ Use a respectful, clear tone. You may use Nigerian English or Nigerian Pidgin wh
     );
 
     const data = await upstream.json();
-
-    if (!upstream.ok) {
-      console.error('Gemini error:', data);
-      return res.status(502).json({
-        error: 'Gemini could not process your request.'
-      });
-    }
-
-    const reply = data.candidates?.[0]?.content?.parts
-      ?.map(part => part.text || '')
-      .join('');
-
-    if (!reply) {
-      return res.status(502).json({
-        error: 'Gemini returned an empty response.'
-      });
-    }
-
-    res.json({ reply });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      error: 'Unexpected server error.'
-    });
-  }
-});
-
-const port = process.env.PORT || 3000;
-
-app.listen(port, () => {
-  console.log(`NOVA AI is running on port ${port}`);
-});
