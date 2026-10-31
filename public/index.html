@@ -165,17 +165,21 @@
       );
 
       try {
-        const response = await fetch("/api/chat", {
-          method: "POST",
+        const controller = new AbortController();
+const timeout = setTimeout(() => controller.abort(), 30000);
 
-          headers: {
-            "Content-Type": "application/json"
-          },
+const response = await fetch("/api/chat", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    messages: messages
+  }),
+  signal: controller.signal
+});
 
-          body: JSON.stringify({
-            messages: messages
-          })
-        });
+clearTimeout(timeout);
 
         const data = await response.json();
 
